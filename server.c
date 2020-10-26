@@ -4,7 +4,7 @@
 
 #include "dyad.h"
 
-#define CLIENT_MAX 10
+#define CLIENT_MAX 3
 
 #define STRING_MAX 256
 
@@ -55,9 +55,11 @@ static void onAccept(dyad_Event *e) {
 		dyad_writef(e->remote,"you are number %d.\n",j);
 		broadcast("%d -> joins.\n",j);
 	} else {
-		dyad_writef(e->remote,"error: cannot connect server full.\n");
+		printf("error: server full.\n");
+		dyad_writef(e->remote,"error: server full.\n");
 		dyad_end(e->remote);
 	}
+
 }
 
 int main(int argc,char **argv) {
