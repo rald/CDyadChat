@@ -8,9 +8,10 @@
 #define STRING_MAX 256
 
 void *threadFunction(void *arg) {
-	char line[STRING_MAX];
+	char *line=NULL;
+	size_t lineLen=0;
 	for(;;) {
-		fgets(line,STRING_MAX,stdin);
+		getline(&line,&lineLen,stdin);
 		dyad_writef((dyad_Stream*)arg,"%s",line);
 	}
 }
