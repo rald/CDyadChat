@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
 
@@ -10,14 +11,13 @@ void *threadFunction(void *arg) {
 	char line[STRING_MAX];
 	for(;;) {
 		fgets(line,STRING_MAX,stdin);
-		char *p=strrchr(line,'\n'); if(p) *p='\0';
-		dyad_writef((dyad_Stream*)arg,"%s\n",line);
+		dyad_writef((dyad_Stream*)arg,"%s",line);
 	}
 }
 
 static void onConnect(dyad_Event *e) {
 	pthread_t thread;
-  printf("connected.\n");
+  printf("info: connected.\n");
 	pthread_create(&thread,NULL,threadFunction,e->stream);
 }
 
@@ -30,11 +30,17 @@ static void onLine(dyad_Event *e) {
 }
 
 static void onClose(dyad_Event *e) {
-  printf("disconnected.\n");
+  printf("info: disconnected.\n");
 }
 
-int main(void) {
+int main(int argc,char **argv) {
   dyad_Stream *s;
+
+	if(argc!=3) {
+		fprintf(stderr,"Syntax: %s HOST PORT\n",argv[0]);
+		return -1;
+	}
+
   dyad_init();
 
   s = dyad_newStream();
@@ -42,7 +48,7 @@ int main(void) {
   dyad_addListener(s, DYAD_EVENT_ERROR,   onError,   NULL);
   dyad_addListener(s, DYAD_EVENT_LINE,    onLine,    NULL);
   dyad_addListener(s, DYAD_EVENT_CLOSE,   onClose,   NULL);
-  dyad_connect(s, "198.251.81.133", 5254);
+  dyad_connect(s, argv[1], atoi(argv[2]));
 
   while (dyad_getStreamCount() > 0) {
     dyad_update();

@@ -28,8 +28,8 @@ static void onLine(dyad_Event *e) {
 }
 
 static void onClose(dyad_Event *e) {
-	broadcast("%d -> disconnected.\n",*(int*)e->udata);
 	printf("%d -> disconnected.\n",*(int*)e->udata);
+	broadcast("%d -> disconnected.\n",*(int*)e->udata);
 	clients[*(int*)e->udata]=NULL;
 	free(e->udata);
 }
@@ -52,16 +52,22 @@ static void onAccept(dyad_Event *e) {
 	  dyad_addListener(e->remote, DYAD_EVENT_LINE,    onLine,    k);
 	  dyad_addListener(e->remote, DYAD_EVENT_CLOSE,   onClose,   k);
 		dyad_writef(e->remote,"you are number %d.\n",j);
-		broadcast("number %d joins.\n",j);
+		printf("%d -> joins.\n",j);
+		broadcast("%d -> joins.\n",j);
 	} else {
 		dyad_writef(e->remote,"error: cannot connect server full.\n");
 		dyad_end(e->remote);
 	}
 }
 
-int main(void) {
+int main(int argc,char **argv) {
 
 	int i;
+
+	if(argc!=2) {
+		fprintf(stderr,"Syntax: %s PORT\n",argv[0]);
+		return -1;
+	}
 
 	for(i=0;i<CLIENT_MAX;i++) clients[i]=NULL;
 
@@ -69,7 +75,7 @@ int main(void) {
 
   dyad_Stream *s = dyad_newStream();
   dyad_addListener(s, DYAD_EVENT_ACCEPT,  onAccept,  NULL);
-  dyad_listen(s, 5254);
+  dyad_listen(s, atoi(argv[1]));
 
   while (dyad_getStreamCount() > 0) {
     dyad_update();
