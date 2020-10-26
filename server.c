@@ -25,6 +25,10 @@ static void broadcast(const char *fmt,...) {
 	}
 }
 
+static void onError(dyad_Event *e) {
+  printf("error: %s\n", e->msg);
+}
+
 static void onLine(dyad_Event *e) {
 	broadcast("%d: %s\n",*(int*)e->udata,e->data);
 }
@@ -37,7 +41,7 @@ static void onClose(dyad_Event *e) {
 
 static void onAccept(dyad_Event *e) {
 	int i,j;
-	
+
 	j=-1;
   for(i=0;i<CLIENT_MAX;i++) {
 		if(clients[i]==NULL) {
@@ -52,6 +56,7 @@ static void onAccept(dyad_Event *e) {
 		*k=j;
 	  dyad_addListener(e->remote, DYAD_EVENT_LINE,    onLine,    k);
 	  dyad_addListener(e->remote, DYAD_EVENT_CLOSE,   onClose,   k);
+	  dyad_addListener(e->remote, DYAD_EVENT_ERROR,   onError,   k);
 		dyad_writef(e->remote,"you are number %d.\n",j);
 		broadcast("%d -> joins.\n",j);
 	} else {
@@ -77,6 +82,7 @@ int main(int argc,char **argv) {
 
   dyad_Stream *s = dyad_newStream();
   dyad_addListener(s, DYAD_EVENT_ACCEPT,  onAccept,  NULL);
+  dyad_addListener(s, DYAD_EVENT_ERROR,   onError,   NULL);
   dyad_listen(s, atoi(argv[1]));
 
   while (dyad_getStreamCount() > 0) {

@@ -17,7 +17,6 @@ void *threadFunction(void *arg) {
 
 static void onConnect(dyad_Event *e) {
 	pthread_t thread;
-  printf("info: connected.\n");
 	pthread_create(&thread,NULL,threadFunction,e->stream);
 }
 
@@ -27,10 +26,6 @@ static void onError(dyad_Event *e) {
 
 static void onLine(dyad_Event *e) {
   printf("%s\n", e->data);
-}
-
-static void onClose(dyad_Event *e) {
-  printf("info: disconnected.\n");
 }
 
 int main(int argc,char **argv) {
@@ -47,7 +42,6 @@ int main(int argc,char **argv) {
   dyad_addListener(s, DYAD_EVENT_CONNECT, onConnect, NULL);
   dyad_addListener(s, DYAD_EVENT_ERROR,   onError,   NULL);
   dyad_addListener(s, DYAD_EVENT_LINE,    onLine,    NULL);
-  dyad_addListener(s, DYAD_EVENT_CLOSE,   onClose,   NULL);
   dyad_connect(s, argv[1], atoi(argv[2]));
 
   while (dyad_getStreamCount() > 0) {
