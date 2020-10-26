@@ -5,8 +5,6 @@
 
 #include "dyad.h"
 
-#define STRING_MAX 256
-
 void *threadFunction(void *arg) {
 	char *line=NULL;
 	size_t lineLen=0;

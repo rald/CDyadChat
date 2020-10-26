@@ -6,8 +6,6 @@
 
 #define CLIENT_MAX 10
 
-#define STRING_MAX 256
-
 dyad_Stream *clients[CLIENT_MAX];
 
 static void broadcast(const char *fmt,...) {
