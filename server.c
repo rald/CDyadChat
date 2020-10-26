@@ -4,7 +4,7 @@
 
 #include "dyad.h"
 
-#define CLIENT_MAX 3
+#define CLIENT_MAX 10
 
 #define STRING_MAX 256
 
