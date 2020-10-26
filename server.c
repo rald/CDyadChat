@@ -13,6 +13,9 @@ dyad_Stream *clients[CLIENT_MAX];
 static void broadcast(const char *fmt,...) {
 	int i;
 	va_list args;
+	va_start(args,fmt);
+  vprintf(fmt,args);
+	va_end(args);
 	for(i=0;i<CLIENT_MAX;i++) {
 		if(clients[i]) {
 			va_start(args,fmt);
@@ -23,12 +26,10 @@ static void broadcast(const char *fmt,...) {
 }
 
 static void onLine(dyad_Event *e) {
-	printf("%d: %s\n",*(int*)e->udata,e->data);
 	broadcast("%d: %s\n",*(int*)e->udata,e->data);
 }
 
 static void onClose(dyad_Event *e) {
-	printf("%d -> disconnected.\n",*(int*)e->udata);
 	broadcast("%d -> disconnected.\n",*(int*)e->udata);
 	clients[*(int*)e->udata]=NULL;
 	free(e->udata);
@@ -52,7 +53,6 @@ static void onAccept(dyad_Event *e) {
 	  dyad_addListener(e->remote, DYAD_EVENT_LINE,    onLine,    k);
 	  dyad_addListener(e->remote, DYAD_EVENT_CLOSE,   onClose,   k);
 		dyad_writef(e->remote,"you are number %d.\n",j);
-		printf("%d -> joins.\n",j);
 		broadcast("%d -> joins.\n",j);
 	} else {
 		dyad_writef(e->remote,"error: cannot connect server full.\n");
